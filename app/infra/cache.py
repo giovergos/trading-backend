@@ -1,8 +1,4 @@
-"""Ασύγχρονη πρόσβαση σε Redis.
-
-Το Redis κρατά live κατάσταση (τελευταίες τιμές, τρέχοντα signals) ώστε το API
-να απαντά γρήγορα χωρίς να χτυπά την PostgreSQL σε κάθε request.
-"""
+"""Ασύγχρονη πρόσβαση σε Redis."""
 import redis.asyncio as aioredis
 
 from app.config import get_settings
@@ -31,7 +27,6 @@ def get_redis() -> aioredis.Redis:
 
 
 async def ping() -> bool:
-    """Έλεγχος συνδεσιμότητας για το /health (δεν πετάει exception)."""
     if _redis is None:
         return False
     try:

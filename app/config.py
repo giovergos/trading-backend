@@ -1,9 +1,4 @@
-"""Κεντρική διαμόρφωση μέσω μεταβλητών περιβάλλοντος.
-
-Χρησιμοποιούμε pydantic-settings ώστε όλες οι ρυθμίσεις (βάση, cache, κλειδιά)
-να διαβάζονται από .env / environment με validation τύπων. Έτσι η ίδια εικόνα
-Docker τρέχει σε διαφορετικά περιβάλλοντα χωρίς αλλαγή κώδικα.
-"""
+"""Κεντρική διαμόρφωση μέσω μεταβλητών περιβάλλοντος (pydantic-settings)."""
 from functools import lru_cache
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -26,6 +21,15 @@ class Settings(BaseSettings):
     redis_host: str = "redis"
     redis_port: int = 6379
 
+    # --- Αγορά / CEX (Φάση 1) ---
+    exchange_id: str = "binance"
+    # Κρατάμε τα σύμβολα ως string χωρισμένο με κόμμα: αποφεύγει το gotcha
+    # του pydantic-settings που απαιτεί JSON για λίστες μέσα από .env.
+    symbols: str = "BTC/USDT,ETH/USDT"
+    timeframe: str = "1h"
+    ohlcv_backfill_limit: int = 500
+    ws_reconnect_delay: float = 5.0  # δευτ. αναμονής πριν το reconnect
+
     @property
     def postgres_dsn(self) -> str:
         return (
@@ -37,8 +41,11 @@ class Settings(BaseSettings):
     def redis_url(self) -> str:
         return f"redis://{self.redis_host}:{self.redis_port}/0"
 
+    @property
+    def symbol_list(self) -> list[str]:
+        return [s.strip() for s in self.symbols.split(",") if s.strip()]
+
 
 @lru_cache
 def get_settings() -> Settings:
-    """Singleton ρυθμίσεων (διαβάζονται μία φορά ανά process)."""
     return Settings()

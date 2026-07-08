@@ -10,7 +10,6 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    # --reload + volume mount = γρήγορο dev loop (αλλαγές κώδικα χωρίς rebuild)
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     volumes:
       - ./app:/code/app
