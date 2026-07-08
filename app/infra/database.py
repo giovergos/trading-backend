@@ -44,3 +44,16 @@ async def ping() -> bool:
         return True
     except Exception:
         return False
+
+
+async def create_all() -> None:
+    """Δημιουργεί τους πίνακες αν δεν υπάρχουν (startup).
+
+    Απλή προσέγγιση κατάλληλη για το scope της εργασίας. Για production θα
+    χρησιμοποιούσαμε migrations (Alembic) — προτεινόμενη μελλοντική επέκταση.
+    """
+    from app.models.tables import Base
+    if _engine is None:
+        raise RuntimeError("Database engine δεν έχει αρχικοποιηθεί")
+    async with _engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
