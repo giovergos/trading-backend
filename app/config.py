@@ -37,6 +37,10 @@ class Settings(BaseSettings):
     strategy_num_std: float = 2.0
     strategy_exit_z: float = 0.0
 
+    # --- Backtest (Φάση 5) ---
+    backtest_initial_capital: float = 10_000.0
+    backtest_fee_rate: float = 0.001  # 0.1% ανά συναλλαγή (taker)
+
     @property
     def postgres_dsn(self) -> str:
         return (
