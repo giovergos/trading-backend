@@ -37,3 +37,18 @@ class StablecoinTransferORM(Base):
     amount: Mapped[float] = mapped_column(Float)
     block_number: Mapped[int] = mapped_column(BigInteger)
     timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class PaperTradeORM(Base):
+    """Ιστορικό κλεισμένων paper συναλλαγών (surrogate id, χρονική σειρά)."""
+
+    __tablename__ = "paper_trades"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    symbol: Mapped[str] = mapped_column(String(32))
+    entry_time: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    entry_price: Mapped[float] = mapped_column(Float)
+    exit_time: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    exit_price: Mapped[float] = mapped_column(Float)
+    pnl: Mapped[float] = mapped_column(Float)
+    return_pct: Mapped[float] = mapped_column(Float)

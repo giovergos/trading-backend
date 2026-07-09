@@ -13,6 +13,8 @@ from app.config import Settings, get_settings
 from app.infra import cache, candles as candles_repo, database
 from app.infra.onchain_cache import GasCache
 from app.infra.ticker_cache import TickerCache
+from app.execution.position_store import PositionStore
+from app.execution.executor import PaperExecutor
 from app.strategy.mean_reversion import MeanReversionStrategy
 
 log = logging.getLogger(__name__)
@@ -69,6 +71,24 @@ async def lifespan(app: FastAPI):
         num_std=settings.strategy_num_std,
         exit_z=settings.strategy_exit_z,
     )
+
+    # Paper trading executor (live αντίστοιχο του backtester, ίδιος πυρήνας)
+    position_store = PositionStore()
+    app.state.position_store = position_store
+    paper_executor = PaperExecutor(
+        strategy=app.state.strategy,
+        collector=collector,
+        ticker_cache=ticker_cache,
+        position_store=position_store,
+        sessionmaker=database.get_sessionmaker(),
+        symbols=settings.symbol_list,
+        timeframe=settings.timeframe,
+        capital_per_symbol=settings.paper_capital_per_symbol,
+        fee_rate=settings.paper_fee_rate,
+        interval=settings.paper_execution_interval,
+    )
+    app.state.paper_executor = paper_executor
+    tasks.append(asyncio.create_task(paper_executor.run()))
 
     log.info("Startup ολοκληρώθηκε. Σύμβολα: %s", settings.symbol_list)
     yield

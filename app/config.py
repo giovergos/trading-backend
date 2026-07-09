@@ -41,6 +41,11 @@ class Settings(BaseSettings):
     backtest_initial_capital: float = 10_000.0
     backtest_fee_rate: float = 0.001  # 0.1% ανά συναλλαγή (taker)
 
+    # --- Paper trading (Φάση 6) ---
+    paper_capital_per_symbol: float = 10_000.0
+    paper_fee_rate: float = 0.001
+    paper_execution_interval: float = 60.0  # δευτ. ανά κύκλο ελέγχου
+
     @property
     def postgres_dsn(self) -> str:
         return (
