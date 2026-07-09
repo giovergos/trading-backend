@@ -1,1 +1,1 @@
-"""Συλλογή δεδομένων — CEX (Binance, Φάση 1) & on-chain (Ethereum, Φάση 3)."""
+"""Συλλογή δεδομένων — CEX (Binance) & on-chain (Ethereum)."""

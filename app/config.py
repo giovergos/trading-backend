@@ -10,25 +10,32 @@ class Settings(BaseSettings):
     app_name: str = "trading-backend"
     environment: str = "development"
 
-    # PostgreSQL
     postgres_host: str = "postgres"
     postgres_port: int = 5432
     postgres_user: str = "trading"
     postgres_password: str = "trading"
     postgres_db: str = "trading"
 
-    # Redis
     redis_host: str = "redis"
     redis_port: int = 6379
 
-    # --- Αγορά / CEX (Φάση 1) ---
+    # --- Αγορά / CEX ---
     exchange_id: str = "binance"
-    # Κρατάμε τα σύμβολα ως string χωρισμένο με κόμμα: αποφεύγει το gotcha
-    # του pydantic-settings που απαιτεί JSON για λίστες μέσα από .env.
     symbols: str = "BTC/USDT,ETH/USDT"
     timeframe: str = "1h"
     ohlcv_backfill_limit: int = 500
-    ws_reconnect_delay: float = 5.0  # δευτ. αναμονής πριν το reconnect
+    ws_reconnect_delay: float = 5.0
+
+    # --- On-chain / Ethereum ---
+    eth_rpc_url: str = ""
+    eth_poll_interval: float = 12.0
+    stablecoin_threshold: float = 1_000_000.0
+    onchain_max_block_span: int = 50
+
+    # --- Strategy (Φάση 4) ---
+    strategy_window: int = 20
+    strategy_num_std: float = 2.0
+    strategy_exit_z: float = 0.0
 
     @property
     def postgres_dsn(self) -> str:

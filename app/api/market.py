@@ -17,7 +17,6 @@ async def get_ohlcv(
     limit: int = Query(100, ge=1, le=1000),
     session: AsyncSession = Depends(get_session),
 ) -> list[Candle]:
-    """Ιστορικά κεριά από την PostgreSQL (αποθηκευμένα μέσω backfill)."""
     tf = timeframe or get_settings().timeframe
     return await candles_repo.get_candles(session, symbol, tf, limit)
 
@@ -30,11 +29,9 @@ async def backfill(
     limit: int = Query(500, ge=1, le=1000),
     session: AsyncSession = Depends(get_session),
 ) -> dict:
-    """Τραβά ιστορικά από το exchange (REST) και τα αποθηκεύει (idempotent)."""
-    collector = request.app.state.collector
     tf = timeframe or get_settings().timeframe
     try:
-        fetched = await collector.fetch_ohlcv(symbol, tf, limit)
+        fetched = await request.app.state.collector.fetch_ohlcv(symbol, tf, limit)
     except Exception as exc:
         raise HTTPException(status_code=502, detail=f"Σφάλμα exchange: {exc}")
     stored = await candles_repo.save_candles(session, fetched)
@@ -43,5 +40,4 @@ async def backfill(
 
 @router.get("/latest", response_model=list[Ticker])
 async def get_latest(request: Request) -> list[Ticker]:
-    """Τελευταίες live τιμές από το Redis cache."""
     return await request.app.state.ticker_cache.get_all()

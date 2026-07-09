@@ -1,9 +1,4 @@
-"""Repository για τον πίνακα candles: αποθήκευση & ανάκτηση.
-
-Το save_candles χρησιμοποιεί INSERT ... ON CONFLICT DO NOTHING (PostgreSQL):
-αν ένα κερί υπάρχει ήδη (ίδιο symbol/timeframe/timestamp), αγνοείται αντί να
-πετάξει σφάλμα. Έτσι μπορούμε να ξανατρέχουμε backfill χωρίς διπλότυπα.
-"""
+"""Repository για τον πίνακα candles (idempotent αποθήκευση + ανάκτηση)."""
 from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -24,10 +19,7 @@ async def save_candles(session: AsyncSession, candles: list[Candle]) -> int:
     return result.rowcount if result.rowcount is not None else 0
 
 
-async def get_candles(
-    session: AsyncSession, symbol: str, timeframe: str, limit: int
-) -> list[Candle]:
-    """Επιστρέφει τα πιο πρόσφατα κεριά, σε αύξουσα χρονική σειρά."""
+async def get_candles(session: AsyncSession, symbol: str, timeframe: str, limit: int) -> list[Candle]:
     stmt = (
         select(CandleORM)
         .where(CandleORM.symbol == symbol, CandleORM.timeframe == timeframe)
@@ -36,7 +28,7 @@ async def get_candles(
     )
     result = await session.execute(stmt)
     rows = list(result.scalars().all())
-    rows.reverse()  # παλαιότερο -> νεότερο
+    rows.reverse()
     return [
         Candle(
             symbol=r.symbol, timeframe=r.timeframe, timestamp=r.timestamp,

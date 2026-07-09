@@ -5,3 +5,4 @@ sqlalchemy[asyncio]==2.0.36
 asyncpg==0.30.0
 redis==5.2.1
 ccxt==4.5.64
+web3==7.16.0

@@ -3,7 +3,7 @@ import logging
 
 from fastapi import FastAPI
 
-from app.api import health, market
+from app.api import health, market, onchain, strategy
 from app.config import get_settings
 from app.core.lifespan import lifespan
 
@@ -11,10 +11,12 @@ logging.basicConfig(level=logging.INFO)
 
 settings = get_settings()
 
-app = FastAPI(title=settings.app_name, version="0.2.0", lifespan=lifespan)
+app = FastAPI(title=settings.app_name, version="0.4.0", lifespan=lifespan)
 
 app.include_router(health.router)
 app.include_router(market.router)
+app.include_router(onchain.router)
+app.include_router(strategy.router)
 
 
 @app.get("/", tags=["system"])

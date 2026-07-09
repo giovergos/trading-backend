@@ -1,10 +1,4 @@
-"""Κύκλος ζωής του ccxt client.
-
-Χρησιμοποιούμε την ccxt.pro έκδοση: το ίδιο instance εξυπηρετεί REST
-(fetch_ohlcv για ιστορικά) και WebSocket (watch_* για live ροή). Το instance
-αρχικοποιείται στο lifespan και κλείνει καθαρά στο shutdown — αλλιώς μένουν
-ανοιχτά sockets.
-"""
+"""Κύκλος ζωής του ccxt client (ccxt.pro: REST + WebSocket)."""
 import ccxt.pro as ccxtpro
 
 from app.config import get_settings
@@ -14,8 +8,7 @@ _exchange: ccxtpro.Exchange | None = None
 
 def init_exchange() -> ccxtpro.Exchange:
     global _exchange
-    settings = get_settings()
-    exchange_cls = getattr(ccxtpro, settings.exchange_id)
+    exchange_cls = getattr(ccxtpro, get_settings().exchange_id)
     _exchange = exchange_cls({"enableRateLimit": True})
     return _exchange
 

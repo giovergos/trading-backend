@@ -7,6 +7,5 @@ from app.infra import database
 
 
 async def get_session() -> AsyncIterator[AsyncSession]:
-    sessionmaker = database.get_sessionmaker()
-    async with sessionmaker() as session:
+    async with database.get_sessionmaker()() as session:
         yield session

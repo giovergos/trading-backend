@@ -1,4 +1,4 @@
-"""Strategy engine — mean reversion (Bollinger / z-score), Φάση 4.
+"""Strategy engine — mean reversion (Bollinger / z-score).
 
-Σχεδιάζεται ως καθαρή λογική, κοινή για backtesting και live executor.
+Καθαρή λογική, κοινή για backtesting και live executor.
 """

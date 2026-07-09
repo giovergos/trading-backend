@@ -15,8 +15,7 @@ _sessionmaker: async_sessionmaker[AsyncSession] | None = None
 
 def init_engine() -> AsyncEngine:
     global _engine, _sessionmaker
-    settings = get_settings()
-    _engine = create_async_engine(settings.postgres_dsn, pool_pre_ping=True, future=True)
+    _engine = create_async_engine(get_settings().postgres_dsn, pool_pre_ping=True, future=True)
     _sessionmaker = async_sessionmaker(_engine, expire_on_commit=False)
     return _engine
 
@@ -47,11 +46,7 @@ async def ping() -> bool:
 
 
 async def create_all() -> None:
-    """Δημιουργεί τους πίνακες αν δεν υπάρχουν (startup).
-
-    Απλή προσέγγιση κατάλληλη για το scope της εργασίας. Για production θα
-    χρησιμοποιούσαμε migrations (Alembic) — προτεινόμενη μελλοντική επέκταση.
-    """
+    """Δημιουργεί τους πίνακες αν δεν υπάρχουν (για production: Alembic)."""
     from app.models.tables import Base
     if _engine is None:
         raise RuntimeError("Database engine δεν έχει αρχικοποιηθεί")
